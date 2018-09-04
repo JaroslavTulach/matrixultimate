@@ -6,14 +6,12 @@ import org.graalvm.nativeimage.c.CContext;
 import org.graalvm.nativeimage.c.function.CEntryPoint;
 import org.graalvm.nativeimage.c.function.CFunction;
 import org.graalvm.nativeimage.c.struct.CField;
-import org.graalvm.nativeimage.c.struct.CStruct;
 import org.graalvm.word.Pointer;
 import org.graalvm.word.PointerBase;
 import org.graalvm.word.WordFactory;
 
 @CContext(GslDirectives.class)
 final class GslDirect implements GreatScientificLibrary<Long> {
-    @CStruct("gsl_matrix")
     static interface GslMatrix extends PointerBase {
         @CField long size1();
         @CField long size2();
