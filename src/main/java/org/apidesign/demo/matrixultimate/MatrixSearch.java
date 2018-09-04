@@ -13,7 +13,7 @@ public interface MatrixSearch {
         private final long size;
         private final long time;
 
-        Result(long row, long column, long size, long time) {
+        public Result(long row, long column, long size, long time) {
             this.row = row;
             this.column = column;
             this.size = size;
