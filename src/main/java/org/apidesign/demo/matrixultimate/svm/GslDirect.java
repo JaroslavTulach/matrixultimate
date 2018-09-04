@@ -12,7 +12,7 @@ import org.graalvm.word.WordFactory;
 import org.apidesign.demo.matrixultimate.MatrixSearch;
 
 @CContext(GslDirectives.class)
-final class GslDirect implements GreatScientificLibrary<Long> {
+final class GslDirect implements GreatScientificLibrary<GslDirect.GslMatrix> {
     @CStruct("gsl_matrix")
     static interface GslMatrix extends PointerBase {
         @CField long size1();
@@ -74,44 +74,42 @@ final class GslDirect implements GreatScientificLibrary<Long> {
     }
 
     @Override
-    public Long create(long size1, long size2) {
-        return gsl_matrix_alloc(size1, size2).rawValue();
+    public GslMatrix create(long size1, long size2) {
+        return gsl_matrix_alloc(size1, size2);
     }
 
     @Override
-    public void free(Long matrix) {
-        gsl_matrix_free(WordFactory.pointer(matrix));
+    public void free(GslMatrix matrix) {
+        gsl_matrix_free(matrix);
     }
 
     @Override
-    public long toRaw(Long m) {
-        return m;
+    public long toRaw(GslMatrix m) {
+        return m.rawValue();
     }
 
     @Override
-    public Long fromRaw(long m) {
-        return m;
+    public GslMatrix fromRaw(long m) {
+        return WordFactory.pointer(m);
     }
 
     @Override
-    public double get(Long matrix, long i, long j) {
-        return gsl_matrix_get(WordFactory.pointer(matrix), i, j);
+    public double get(GslMatrix matrix, long i, long j) {
+        return gsl_matrix_get(matrix, i, j);
     }
 
     @Override
-    public void set(Long matrix, long i, long j, double v) {
-        gsl_matrix_set(WordFactory.pointer(matrix), i, j, v);
+    public void set(GslMatrix matrix, long i, long j, double v) {
+        gsl_matrix_set(matrix, i, j, v);
     }
 
     @Override
-    public long getSize1(Long m) {
-        GslMatrix matrix = WordFactory.pointer(m);
+    public long getSize1(GslMatrix matrix) {
         return matrix.size1();
     }
 
     @Override
-    public long getSize2(Long m) {
-        GslMatrix matrix = WordFactory.pointer(m);
+    public long getSize2(GslMatrix matrix) {
         return matrix.size2();
     }
 }
