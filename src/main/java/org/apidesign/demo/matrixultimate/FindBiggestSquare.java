@@ -1,6 +1,6 @@
 package org.apidesign.demo.matrixultimate;
 
-final class FindBiggestSquare<Matrix> implements Runnable {
+final class FindBiggestSquare<Matrix> implements Runnable, MatrixSearchResult {
     private final GreatScientificLibrary<Matrix> gsl;
     private final Matrix matrix;
     private long atI;

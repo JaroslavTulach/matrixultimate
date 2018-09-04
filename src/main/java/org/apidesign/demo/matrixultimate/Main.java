@@ -1,6 +1,7 @@
 package org.apidesign.demo.matrixultimate;
 
 import org.apidesign.demo.matrixultimate.jna.JNAScientificLibrary;
+import org.apidesign.demo.matrixultimate.svm.SVMBiggestSquare;
 import org.apidesign.demo.matrixultimate.svm.SVMScientificLibrary;
 
 final class Main {
@@ -31,28 +32,29 @@ final class Main {
         for (int i = 1; i <= 10; i++) {
             long ptrMatrix = allocRawMatrix(gslJna, size);
 
-            FindBiggestSquare<Long> findSvm = compute(gslSvm, ptrMatrix);
-            FindBiggestSquare findJna = compute(gslJna, ptrMatrix);
+            MatrixSearchResult findSvm = MatrixSearchResult.searchSquare(gslSvm, ptrMatrix);
+            MatrixSearchResult findJna = MatrixSearchResult.searchSquare(gslJna, ptrMatrix);
 
-            if (
-                findSvm.getColumn() != findJna.getColumn() ||
-                findSvm.getRow() != findJna.getRow() ||
-                findSvm.getSize() != findJna.getSize()
-            ) {
-                System.err.println("different results! Jna: ");
+            if (findSvm.hashStamp() != findJna.hashStamp()) {
+                System.err.println("Different results!");
                 dumpRawMatrix(gslJna, ptrMatrix, findJna);
                 dumpRawMatrix(gslSvm, ptrMatrix, findSvm);
             }
 
+            System.err.printf("Searching size %d took %d ms with JNA and %d ms with SVM\n", size, findJna.getMilliseconds(), findSvm.getMilliseconds());
+            long hashStamp = SVMBiggestSquare.compute(ptrMatrix);
+            if (findSvm.hashStamp() != hashStamp) {
+                System.err.println("Different result with SVM!");
+            }
+
             freeRawMatrix(gslSvm, ptrMatrix);
 
-            System.err.printf("Searching size %d took %d ms with JNA and %d ms with SVM\n", size, findJna.getMilliseconds(), findSvm.getMilliseconds());
 
             size *= 2;
         }
     }
 
-    private static <Matrix> void dumpRawMatrix(GreatScientificLibrary<Matrix> gsl, long ptr, FindBiggestSquare l) {
+    private static <Matrix> void dumpRawMatrix(GreatScientificLibrary<Matrix> gsl, long ptr, MatrixSearchResult l) {
         Matrix matrix = gsl.fromRaw(ptr);
         Dump<Matrix> dump = new Dump<>(gsl, matrix, l.getRow(), l.getColumn(), l.getSize());
         dump.run();
