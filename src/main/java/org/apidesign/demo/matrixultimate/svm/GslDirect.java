@@ -1,7 +1,6 @@
 package org.apidesign.demo.matrixultimate.svm;
 
 import org.apidesign.demo.matrixultimate.GreatScientificLibrary;
-import org.apidesign.demo.matrixultimate.MatrixSearchResult;
 import org.graalvm.nativeimage.c.CContext;
 import org.graalvm.nativeimage.c.function.CEntryPoint;
 import org.graalvm.nativeimage.c.function.CFunction;
@@ -10,6 +9,7 @@ import org.graalvm.nativeimage.c.struct.CStruct;
 import org.graalvm.word.Pointer;
 import org.graalvm.word.PointerBase;
 import org.graalvm.word.WordFactory;
+import org.apidesign.demo.matrixultimate.MatrixSearch;
 
 @CContext(GslDirectives.class)
 final class GslDirect implements GreatScientificLibrary<Long> {
@@ -20,6 +20,7 @@ final class GslDirect implements GreatScientificLibrary<Long> {
     }
 
     private static final GslDirect GSL = new GslDirect();
+    private static final MatrixSearch FIND_BIGGEST_SQUARE = MatrixSearch.findBiggestSquare(GSL);
 
     private GslDirect() {
     }
@@ -67,9 +68,9 @@ final class GslDirect implements GreatScientificLibrary<Long> {
 
     @CEntryPoint(name = "Java_org_apidesign_demo_matrixultimate_svm_SVMBiggestSquare_directlyComputeViaSvm")
     public static long directlyComputeViaSvm(Pointer jniEnv, Pointer clazz, @CEntryPoint.IsolateContext long isolateId, GslMatrix ptr) {
-        MatrixSearchResult result = MatrixSearchResult.searchSquare(GSL, ptr.rawValue());
+        MatrixSearch.Result result = FIND_BIGGEST_SQUARE.search(ptr.rawValue());
         System.err.printf("  ditto via native code took %d ms\n", result.getMilliseconds());
-        return result.hashStamp();
+        return result.hashCode();
     }
 
     @Override

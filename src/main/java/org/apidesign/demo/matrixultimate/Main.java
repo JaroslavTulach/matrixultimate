@@ -17,33 +17,29 @@ final class Main {
         gsl.free(matrix);
     }
 
-    static <Matrix> FindBiggestSquare<Matrix> compute(GreatScientificLibrary<Matrix> gsl, long rawMatrix) {
-        Matrix matrix = gsl.fromRaw(rawMatrix);
-        final FindBiggestSquare<Matrix> find = new FindBiggestSquare<>(gsl, matrix);
-        find.run();
-        return find;
-    }
-
     public static void main(String... args) throws Exception {
         GreatScientificLibrary gslJna = new JNAScientificLibrary();
         SVMScientificLibrary gslSvm = new SVMScientificLibrary();
+
+        MatrixSearch searchJna = MatrixSearch.findBiggestSquare(gslJna);
+        MatrixSearch searchSvm = MatrixSearch.findBiggestSquare(gslSvm);
 
         long size = 16;
         for (int i = 1; i <= 10; i++) {
             long ptrMatrix = allocRawMatrix(gslJna, size);
 
-            MatrixSearchResult findSvm = MatrixSearchResult.searchSquare(gslSvm, ptrMatrix);
-            MatrixSearchResult findJna = MatrixSearchResult.searchSquare(gslJna, ptrMatrix);
+            MatrixSearch.Result resSvm = searchSvm.search(ptrMatrix);
+            MatrixSearch.Result resJna = searchJna.search(ptrMatrix);
 
-            if (findSvm.hashStamp() != findJna.hashStamp()) {
+            if (resSvm.hashCode()!= resJna.hashCode()) {
                 System.err.println("Different results!");
-                dumpRawMatrix(gslJna, ptrMatrix, findJna);
-                dumpRawMatrix(gslSvm, ptrMatrix, findSvm);
+                dumpRawMatrix(gslJna, ptrMatrix, resJna);
+                dumpRawMatrix(gslSvm, ptrMatrix, resSvm);
             }
 
-            System.err.printf("Searching size %d took %d ms with JNA and %d ms with SVM\n", size, findJna.getMilliseconds(), findSvm.getMilliseconds());
+            System.err.printf("Searching size %d took %d ms with JNA and %d ms with SVM\n", size, resJna.getMilliseconds(), resSvm.getMilliseconds());
             long hashStamp = SVMBiggestSquare.compute(ptrMatrix);
-            if (findSvm.hashStamp() != hashStamp) {
+            if (resSvm.hashCode() != hashStamp) {
                 System.err.println("Different result with SVM!");
             }
 
@@ -54,7 +50,7 @@ final class Main {
         }
     }
 
-    private static <Matrix> void dumpRawMatrix(GreatScientificLibrary<Matrix> gsl, long ptr, MatrixSearchResult l) {
+    private static <Matrix> void dumpRawMatrix(GreatScientificLibrary<Matrix> gsl, long ptr, MatrixSearch.Result l) {
         Matrix matrix = gsl.fromRaw(ptr);
         Dump<Matrix> dump = new Dump<>(gsl, matrix, l.getRow(), l.getColumn(), l.getSize());
         dump.run();

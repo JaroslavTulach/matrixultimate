@@ -1,33 +1,26 @@
 package org.apidesign.demo.matrixultimate;
 
-final class FindBiggestSquare<Matrix> implements Runnable, MatrixSearchResult {
+final class FindBiggestSquare<Matrix> implements MatrixSearch {
     private final GreatScientificLibrary<Matrix> gsl;
-    private final Matrix matrix;
-    private long atI;
-    private long atJ;
-    private long size;
-    private Long took;
 
-    FindBiggestSquare(GreatScientificLibrary<Matrix> gsl, Matrix matrix) {
+    FindBiggestSquare(GreatScientificLibrary<Matrix> gsl) {
         this.gsl = gsl;
-        this.matrix = matrix;
     }
 
     @Override
-    public void run() {
-        if (took == null) {
-            long stamp = System.currentTimeMillis();
-            compute();
-            took = System.currentTimeMillis() - stamp;
-        }
-    }
+    public Result search(long matrixPtr) {
+        Matrix matrix = gsl.fromRaw(matrixPtr);
 
-    private void compute() {
+        long stamp = System.currentTimeMillis();
+
         final long size1 = gsl.getSize1(matrix);
         final long size2 = gsl.getSize2(matrix);
         Matrix sizes = gsl.create(size1, size2);
 
-        size = 0;
+        long max = 0;
+        long row = -1;
+        long column = -1;
+
         for (long i = size1 - 1; i >= 0; i--) {
             for (long j = size2 - 1; j >= 0; j--) {
                 double v00 = gsl.get(matrix, i, j);
@@ -49,33 +42,19 @@ final class FindBiggestSquare<Matrix> implements Runnable, MatrixSearchResult {
                     }
 
                     gsl.set(sizes, i, j, min + 1);
-                    if (size <= min) {
-                        atI = i;
-                        atJ = j;
-                        size = (long) min + 1;
+                    if (max <= min) {
+                        row = i;
+                        column = j;
+                        max = (long) min + 1;
                     }
                 } else {
                     gsl.set(sizes, i, j, 1.0);
                 }
             }
         }
-
         gsl.free(sizes);
-    }
 
-    public long getRow() {
-        return atI;
-    }
-
-    public long getColumn() {
-        return atJ;
-    }
-
-    public long getSize() {
-        return size;
-    }
-
-    public long getMilliseconds() {
-        return took;
+        long took = System.currentTimeMillis() - stamp;
+        return new Result(row, column, max, took);
     }
 }
