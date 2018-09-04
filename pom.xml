@@ -12,10 +12,68 @@
             <artifactId>jna</artifactId>
             <version>4.5.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.graalvm</groupId>
+            <artifactId>graal-sdk</artifactId>
+            <version>1.0.0-rc5</version>
+            <scope>provided</scope>
+            <type>jar</type>
+        </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <executions>
+                    <execution>
+                        <id>native-image</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${native.image}</executable>
+                            <arguments>
+                                <argument>${debug.native}</argument>
+                                <argument>--shared</argument>
+                                <argument>-H:Name=${project.build.directory}/libscientificjava</argument>
+                                <argument>-cp</argument>
+                                <classpath/>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>run-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${java.home}/bin/java</executable>
+                            <environmentVariables>
+                                <LD_LIBRARY_PATH>${project.build.directory}</LD_LIBRARY_PATH>
+                            </environmentVariables>
+                            <arguments>
+                                <argument>${debug.run}</argument>
+                                <argument>-cp</argument>
+                                <classpath/>
+                                <argument>org.apidesign.demo.matrixultimate.Main</argument>
+                                <argument>1</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <native.image>${java.home}/bin/native-image</native.image>
+        <debug.native>-Dignore</debug.native>
+        <debug.run>-Dignore</debug.run>
     </properties>
 </project>
