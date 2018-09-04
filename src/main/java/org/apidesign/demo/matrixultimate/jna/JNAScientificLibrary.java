@@ -1,6 +1,7 @@
 package org.apidesign.demo.matrixultimate.jna;
 
 import com.sun.jna.Native;
+import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import java.util.Arrays;
 import java.util.List;
@@ -46,9 +47,25 @@ public class JNAScientificLibrary implements GreatScientificLibrary<JNAScientifi
         return (long) matrix.size2;
     }
 
-    public static final class GslMatrix extends Structure implements Structure.ByReference {
+    @Override
+    public long toRaw(GslMatrix m) {
+        return Pointer.nativeValue(m.getPointer());
+    }
+
+    @Override
+    public GslMatrix fromRaw(long ptr) {
+        GslMatrix matrix = new GslMatrix(new Pointer(ptr));
+        matrix.autoRead();
+        return matrix;
+    }
+
+    public static final class GslMatrix extends Structure {
         public long size1;
         public long size2;
+
+        public GslMatrix(Pointer p) {
+            super(p);
+        }
 
         @Override
         protected List<String> getFieldOrder() {

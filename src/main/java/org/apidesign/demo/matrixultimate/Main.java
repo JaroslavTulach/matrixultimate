@@ -4,34 +4,57 @@ import org.apidesign.demo.matrixultimate.jna.JNAScientificLibrary;
 import org.apidesign.demo.matrixultimate.svm.SVMScientificLibrary;
 
 final class Main {
-    private static void measure(String msgFormat, Runnable r) {
-        long stamp = System.currentTimeMillis();
-        r.run();
-        long took = System.currentTimeMillis() - stamp;
-        System.out.println(String.format(msgFormat, took));
+    static <Matrix> long allocRawMatrix(GreatScientificLibrary<Matrix> gsl, long size) {
+        Matrix matrix = gsl.create(size, size);
+        FillRandomly<Matrix> fill = new FillRandomly<>(gsl, matrix);
+        fill.run();
+        return gsl.toRaw(matrix);
     }
 
-    static <Matrix> void compute(GreatScientificLibrary<Matrix> gsl, boolean show, int size) {
-        Matrix matrix = gsl.create(size, size);
-        final FillRandomly<Matrix> fill = new FillRandomly<>(gsl, matrix);
-        fill.run();
-        final FindBiggestSquare<Matrix> find = new FindBiggestSquare<>(gsl, matrix);
-        measure(gsl.getClass().getSimpleName() + " at size " + size + " took %d ms", find);
-        if (show) {
-            Dump dump = new Dump(gsl, matrix, find.getRow(), find.getColumn(), find.getSize());
-            dump.run();
-        }
+    static <Matrix> void freeRawMatrix(GreatScientificLibrary<Matrix> gsl, long ptr) {
+        Matrix matrix = gsl.fromRaw(ptr);
         gsl.free(matrix);
     }
 
-    public static void main(String... args) throws Exception {
-        GreatScientificLibrary gsl1 = new JNAScientificLibrary();
-        SVMScientificLibrary gsl2 = new SVMScientificLibrary();
+    static <Matrix> FindBiggestSquare<Matrix> compute(GreatScientificLibrary<Matrix> gsl, long rawMatrix) {
+        Matrix matrix = gsl.fromRaw(rawMatrix);
+        final FindBiggestSquare<Matrix> find = new FindBiggestSquare<>(gsl, matrix);
+        find.run();
+        return find;
+    }
 
+    public static void main(String... args) throws Exception {
+        GreatScientificLibrary gslJna = new JNAScientificLibrary();
+        SVMScientificLibrary gslSvm = new SVMScientificLibrary();
+
+        long size = 16;
         for (int i = 1; i <= 10; i++) {
-            compute(gsl1, false, 50 * i);
-            compute(gsl2, false, 50 * i);
+            long ptrMatrix = allocRawMatrix(gslJna, size);
+
+            FindBiggestSquare<Long> findSvm = compute(gslSvm, ptrMatrix);
+            FindBiggestSquare findJna = compute(gslJna, ptrMatrix);
+
+            if (
+                findSvm.getColumn() != findJna.getColumn() ||
+                findSvm.getRow() != findJna.getRow() ||
+                findSvm.getSize() != findJna.getSize()
+            ) {
+                System.err.println("different results! Jna: ");
+                dumpRawMatrix(gslJna, ptrMatrix, findJna);
+                dumpRawMatrix(gslSvm, ptrMatrix, findSvm);
+            }
+
+            freeRawMatrix(gslSvm, ptrMatrix);
+
+            System.err.printf("Searching size %d took %d ms with JNA and %d ms with SVM\n", size, findJna.getMilliseconds(), findSvm.getMilliseconds());
+
+            size *= 2;
         }
     }
 
+    private static <Matrix> void dumpRawMatrix(GreatScientificLibrary<Matrix> gsl, long ptr, FindBiggestSquare l) {
+        Matrix matrix = gsl.fromRaw(ptr);
+        Dump<Matrix> dump = new Dump<>(gsl, matrix, l.getRow(), l.getColumn(), l.getSize());
+        dump.run();
+    }
 }

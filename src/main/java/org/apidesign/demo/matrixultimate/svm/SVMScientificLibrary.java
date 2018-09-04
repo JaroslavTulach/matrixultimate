@@ -46,4 +46,13 @@ public class SVMScientificLibrary implements GreatScientificLibrary<Long> {
         return size0(ID, matrix, 2);
     }
 
+    @Override
+    public long toRaw(Long m) {
+        return m;
+    }
+
+    @Override
+    public Long fromRaw(long m) {
+        return m;
+    }
 }

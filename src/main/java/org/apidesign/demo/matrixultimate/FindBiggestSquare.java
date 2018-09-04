@@ -6,6 +6,7 @@ final class FindBiggestSquare<Matrix> implements Runnable {
     private long atI;
     private long atJ;
     private long size;
+    private Long took;
 
     FindBiggestSquare(GreatScientificLibrary<Matrix> gsl, Matrix matrix) {
         this.gsl = gsl;
@@ -14,6 +15,14 @@ final class FindBiggestSquare<Matrix> implements Runnable {
 
     @Override
     public void run() {
+        if (took == null) {
+            long stamp = System.currentTimeMillis();
+            compute();
+            took = System.currentTimeMillis() - stamp;
+        }
+    }
+
+    private void compute() {
         final long size1 = gsl.getSize1(matrix);
         final long size2 = gsl.getSize2(matrix);
         Matrix sizes = gsl.create(size1, size2);
@@ -66,4 +75,7 @@ final class FindBiggestSquare<Matrix> implements Runnable {
         return size;
     }
 
+    public long getMilliseconds() {
+        return took;
+    }
 }
