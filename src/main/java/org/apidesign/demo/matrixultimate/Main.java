@@ -28,16 +28,16 @@ final class Main {
         for (int i = 1; i <= 10; i++) {
             long ptrMatrix = allocRawMatrix(gslJna, size);
 
+            MatrixSearch.Result resJna = searchJna == null ? null : searchJna.search(ptrMatrix);
             MatrixSearch.Result resSvm = searchSvm.search(ptrMatrix);
-            MatrixSearch.Result resJna = searchJna.search(ptrMatrix);
 
-            if (resSvm.hashCode()!= resJna.hashCode()) {
+            if (resJna != null && resSvm.hashCode()!= resJna.hashCode()) {
                 System.err.println("Different results!");
                 dumpRawMatrix(gslJna, ptrMatrix, resJna);
                 dumpRawMatrix(gslSvm, ptrMatrix, resSvm);
             }
 
-            System.err.printf("Searching size %d took %d ms with JNA and %d ms with SVM\n", size, resJna.getMilliseconds(), resSvm.getMilliseconds());
+            System.err.printf("Searching size %d took %s with JNA and %s with SVM\n", size, toTime(resJna), toTime(resSvm));
             long hashStamp = SVMBiggestSquare.compute(ptrMatrix);
             if (resSvm.hashCode() != hashStamp) {
                 System.err.println("Different result with SVM!");
@@ -45,9 +45,20 @@ final class Main {
 
             freeRawMatrix(gslSvm, ptrMatrix);
 
+            if (resJna != null && resJna.getMilliseconds() > 3000) {
+                System.err.println("JNA implementation disqualified!");
+                searchJna = null;
+            }
 
             size *= 2;
         }
+    }
+
+    private static String toTime(MatrixSearch.Result r) {
+        if (r == null) {
+            return "too long";
+        }
+        return r.getMilliseconds() + " ms";
     }
 
     private static <Matrix> void dumpRawMatrix(GreatScientificLibrary<Matrix> gsl, long ptr, MatrixSearch.Result l) {
