@@ -20,72 +20,20 @@ final class GslDirect implements GreatScientificLibrary<GslDirect.GslMatrix> {
     }
 
     private static final GslDirect GSL = new GslDirect();
-    private static final MatrixSearch FIND_BIGGEST_SQUARE = new FindBiggestSquare();
+    private static final MatrixSearch FIND_BIGGEST_SQUARE = new GslDirectBiggestSquare();
 
-    static final class FindBiggestSquare implements MatrixSearch {
-        @Override
-        public MatrixSearch.Result search(long matrixPtr) {
-            GslMatrix matrix = GSL.fromRaw(matrixPtr);
-
-            long stamp = System.currentTimeMillis();
-
-            final long size1 = GSL.getSize1(matrix);
-            final long size2 = GSL.getSize2(matrix);
-            GslMatrix sizes = GSL.create(size1, size2);
-
-            long max = 0;
-            long row = -1;
-            long column = -1;
-
-            for (long i = size1 - 1; i >= 0; i--) {
-                for (long j = size2 - 1; j >= 0; j--) {
-                    double v00 = GSL.get(matrix, i, j);
-                    double v01 = i == size1 - 1 ? -1 : GSL.get(matrix, i + 1, j);
-                    double v10 = j == size2 - 1 ? -1 : GSL.get(matrix, i, j + 1);
-                    double v11 = i == size1 - 1 || j == size2 - 1 ? -1 : GSL.get(matrix, i + 1, j + 1);
-
-                    if (v00 == v01 && v10 == v11 && v00 == v11) {
-                        double s10 = GSL.get(sizes, i + 1, j);
-                        double s01 = GSL.get(sizes, i, j + 1);
-                        double s11 = GSL.get(sizes, i + 1, j + 1);
-
-                        double min = s10;
-                        if (min > s01) {
-                            min = s01;
-                        }
-                        if (min > s11) {
-                            min = s11;
-                        }
-
-                        GSL.set(sizes, i, j, min + 1);
-                        if (max <= min) {
-                            row = i;
-                            column = j;
-                            max = (long) min + 1;
-                        }
-                    } else {
-                        GSL.set(sizes, i, j, 1.0);
-                    }
-                }
-            }
-            GSL.free(sizes);
-
-            long took = System.currentTimeMillis() - stamp;
-            return new MatrixSearch.Result(row, column, max, took);
-        }
-    }
 
     private GslDirect() {
     }
 
     @CFunction
-    private static native GslMatrix gsl_matrix_alloc(long size1, long size2);
+    static native GslMatrix gsl_matrix_alloc(long size1, long size2);
     @CFunction
-    private static native void gsl_matrix_free(GslMatrix m);
+    static native void gsl_matrix_free(GslMatrix m);
     @CFunction
-    private static native double gsl_matrix_get(GslMatrix p, long r, long c);
+    static native double gsl_matrix_get(GslMatrix p, long r, long c);
     @CFunction
-    private static native void gsl_matrix_set(GslMatrix p, long r, long c, double v);
+    static native void gsl_matrix_set(GslMatrix p, long r, long c, double v);
 
     @CEntryPoint(name = "Java_org_apidesign_demo_matrixultimate_svm_SVMIsolate_svmInit", builtin = CEntryPoint.Builtin.CreateIsolate)
     public static native long svmInit();
