@@ -13,7 +13,7 @@ public final class GslDirectives implements CContext.Directives {
 
     @Override
     public List<String> getLibraries() {
-        return Arrays.asList("gsl");
+        return Arrays.asList("gsl", "gslcblas");
     }
 
 }

@@ -49,4 +49,8 @@ public class SVMScientificLibrary implements GreatScientificLibrary<Long> {
     public Long fromRaw(long m) {
         return m;
     }
+
+    public static GreatScientificLibrary<?> getDirect() {
+        return GslDirect.getDefaul();
+    }
 }

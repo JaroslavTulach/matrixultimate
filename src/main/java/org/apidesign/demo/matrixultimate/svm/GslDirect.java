@@ -25,6 +25,10 @@ final class GslDirect implements GreatScientificLibrary<Long> {
     private GslDirect() {
     }
 
+    static GreatScientificLibrary<?> getDefaul() {
+        return GSL;
+    }
+
     @CFunction
     private static native GslMatrix gsl_matrix_alloc(long size1, long size2);
     @CFunction
