@@ -25,7 +25,7 @@ final class GslDirect implements GreatScientificLibrary<Long> {
     private GslDirect() {
     }
 
-    static GreatScientificLibrary<?> getDefaul() {
+    static GreatScientificLibrary<?> getDefault() {
         return GSL;
     }
 

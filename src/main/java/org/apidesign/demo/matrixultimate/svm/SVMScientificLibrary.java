@@ -51,6 +51,6 @@ public class SVMScientificLibrary implements GreatScientificLibrary<Long> {
     }
 
     public static GreatScientificLibrary<?> getDirect() {
-        return GslDirect.getDefaul();
+        return GslDirect.getDefault();
     }
 }
