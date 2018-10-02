@@ -1,6 +1,6 @@
 package org.apidesign.demo.matrixultimate;
 
-import org.apidesign.demo.matrixultimate.svm.SVMScientificLibrary;
+import org.apidesign.demo.matrixultimate.svm.RawScientificLibrary;
 
 final class Main {
     public static void main(String... args) throws Exception {
@@ -10,7 +10,7 @@ final class Main {
         } else {
             throw new IllegalArgumentException("Usage: matrixultimate <size_of_the_matrix>");
         }
-        runTest(SVMScientificLibrary.getDirect(), size);
+        runTest(RawScientificLibrary.getDefault(), size);
     }
 
     private static <Matrix> void runTest(GreatScientificLibrary<Matrix> gsl, int size) {

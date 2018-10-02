@@ -14,8 +14,8 @@ write our own computation in **Java** that manipulates the members of a matrix. 
 
 The goal is to write a *single* algorithm in Java and use it in different setups. To achieve that we use generics to abstract
 away an algebraic type, but have some operations to work on it. As such let's encapsulate the class into
-[FindBiggestSquare](blob/master/src/main/java/org/apidesign/demo/matrixultimate/FindBiggestSquare.java) and let it accept
-an implementation of [GreatScientificLibrary](blob/master/src/main/java/org/apidesign/demo/matrixultimate/GreatScientificLibrary.java)
+[FindBiggestSquare](src/main/java/org/apidesign/demo/matrixultimate/FindBiggestSquare.java) and let it accept
+an implementation of [GreatScientificLibrary](src/main/java/org/apidesign/demo/matrixultimate/GreatScientificLibrary.java)
 - the abstraction over the operations one can do on matrix. Btw. this is an application of a pattern called
 [Singletonizer](http://wiki.apidesign.org/wiki/Singletonizer), something I like a lot when providing access to multiple
 different implementation over an unknown (e.g. algebraic) type - in this case represented as generic parameter `Matrix`.
@@ -87,7 +87,7 @@ what we want to do. We have the algorithm in **Java** and don't want to rewrite 
 
 [JNA](https://github.com/java-native-access/jna/blob/master/README.md) is the standard solution for accessing `C` data
 structures from **Java** without writing a single line of `C` code. Let's implement the `GreatScientificLibrary` with
-**JNA**. Let's create [JNAScientificLibrary](https://github.com/JaroslavTulach/matrixultimate/blob/master/src/main/java/org/apidesign/demo/matrixultimate/jna/JNAScientificLibrary.java)
+**JNA**. Let's create [JNAScientificLibrary](master/src/main/java/org/apidesign/demo/matrixultimate/jna/JNAScientificLibrary.java)
 
 The created interface looks nice. The library is using `GslMatrix` wrapper around each `matrix` data structure and
 just delegates the algebraic type operations to the `native` methods like `gsl_matrix_alloc` that are (thanks to **JNA**)
@@ -121,7 +121,7 @@ structures is going to be amazingly fast!
 
 Remember that our `FindBiggestSquare` algorithm needs implementation of the `GreatScientificLibrary` interface? In
 order to access the `C` structures from `native-image` tool, we need such implementation as well. Let's call it
-[GslDirect](blob/master/src/main/java/org/apidesign/demo/matrixultimate/svm/GslDirect.java):
+[RawScientificLibrary](src/main/java/org/apidesign/demo/matrixultimate/svm/RawScientificLibrary.java):
 
 
 

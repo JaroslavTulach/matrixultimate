@@ -3,7 +3,7 @@ package org.apidesign.demo.matrixultimate.svm;
 import org.apidesign.demo.matrixultimate.GreatScientificLibrary;
 import static org.apidesign.demo.matrixultimate.svm.SVMIsolate.ID;
 
-public class SVMScientificLibrary implements GreatScientificLibrary<Long> {
+public final class SVMScientificLibrary implements GreatScientificLibrary<Long> {
     private static native long create0(long id, long size1, long size2);
     private static native void free0(long id, long ptr);
     private static native double get0(long id, long ptr, long r, long c);
@@ -48,9 +48,5 @@ public class SVMScientificLibrary implements GreatScientificLibrary<Long> {
     @Override
     public Long fromRaw(long m) {
         return m;
-    }
-
-    public static GreatScientificLibrary<?> getDirect() {
-        return GslDirect.getDefault();
     }
 }
