@@ -45,7 +45,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>native-image-standalone</id>
+                        <id>build-standalone</id>
                         <phase>package</phase>
                         <goals>
                             <goal>exec</goal>
@@ -81,7 +81,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>run-native</id>
+                        <id>run-standalone</id>
                         <goals>
                             <goal>exec</goal>
                         </goals>
