@@ -1,9 +1,15 @@
 package org.apidesign.demo.matrixultimate.svm;
 
-public final class SVMBiggestSquare {
-    private static native long directlyComputeViaSvm(long id, long ptrMatrix);
+import org.apidesign.demo.matrixultimate.MatrixSearch;
 
-    public static long compute(long ptrMatrix) {
+public final class SVMBiggestSquare {
+    /** Native method to switch from JVM to Native Image code.
+     * 
+     * @see SVMScientificLibraryJNI#directlyComputeViaSvm
+     */
+    private static native MatrixSearch.Result directlyComputeViaSvm(long id, long ptrMatrix);
+
+    public static MatrixSearch.Result compute(long ptrMatrix) {
         return directlyComputeViaSvm(SVMIsolate.ID, ptrMatrix);
     }
 }

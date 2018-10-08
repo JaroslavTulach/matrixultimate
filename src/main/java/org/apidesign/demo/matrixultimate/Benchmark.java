@@ -37,18 +37,26 @@ final class Benchmark {
                 dumpRawMatrix(gslSvm, ptrMatrix, resSvm);
             }
 
-            System.err.printf("Searching size %d took %s with JNA and %s with SVM\n", size, toTime(resJna), toTime(resSvm));
-            long hashStamp = SVMBiggestSquare.compute(ptrMatrix);
-            if (resSvm.hashCode() != hashStamp) {
+            MatrixSearch.Result resNative = SVMBiggestSquare.compute(ptrMatrix);
+            if (resSvm.hashCode() != resNative.hashCode()) {
                 System.err.println("Different result with SVM!");
             }
 
-            freeRawMatrix(gslSvm, ptrMatrix);
-
+            String noteJna = "";
             if (resJna != null && resJna.getMilliseconds() > 3000) {
-                System.err.println("JNA implementation disqualified!");
+                noteJna = "JNA implementation disqualified!";
                 searchJna = null;
             }
+            System.err.printf(
+                "Searching matrix with size %d took:\n"
+                    + "  JNA                  : %s %s\n"
+                    + "  JNI via Native Image : %s\n"
+                    + "  Fully in Native Image: %s\n",
+                size, toTime(resJna), noteJna, toTime(resSvm), toTime(resNative)
+            );
+
+            freeRawMatrix(gslSvm, ptrMatrix);
+
 
             size *= 2;
         }

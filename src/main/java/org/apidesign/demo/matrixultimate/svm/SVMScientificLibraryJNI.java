@@ -1,7 +1,13 @@
 package org.apidesign.demo.matrixultimate.svm;
 
 import org.apidesign.demo.matrixultimate.MatrixSearch;
+import org.apidesign.demo.matrixultimate.svm.JNIEnv.JClass;
+import org.apidesign.demo.matrixultimate.svm.JNIEnv.JMethodID;
+import org.apidesign.demo.matrixultimate.svm.JNIEnv.JObject;
+import org.apidesign.demo.matrixultimate.svm.JNIEnv.JValue;
+import org.graalvm.nativeimage.StackValue;
 import org.graalvm.nativeimage.c.function.CEntryPoint;
+import org.graalvm.nativeimage.c.type.CTypeConversion;
 import org.graalvm.word.Pointer;
 
 final class SVMScientificLibraryJNI {
@@ -42,11 +48,37 @@ final class SVMScientificLibraryJNI {
 
     private static final MatrixSearch FIND_BIGGEST_SQUARE = MatrixSearch.findBiggestSquare(RawScientificLibrary.getDefault());
 
+    /**
+     * Implementation of JNI native method.
+     * 
+     * @see SVMBiggestSquare#directlyComputeViaSvm
+     */
     @CEntryPoint(name = "Java_org_apidesign_demo_matrixultimate_svm_SVMBiggestSquare_directlyComputeViaSvm")
-    public static long directlyComputeViaSvm(Pointer jniEnv, Pointer clazz, @CEntryPoint.IsolateContext long isolateId, RawScientificLibrary.GslMatrix ptr) {
+    public static JObject directlyComputeViaSvm(JNIEnv env, JNIEnv.JClass clazz, @CEntryPoint.IsolateContext long isolateId, RawScientificLibrary.GslMatrix ptr) {
         MatrixSearch.Result result = FIND_BIGGEST_SQUARE.search(ptr.rawValue());
-        System.err.printf("  ditto via native code took %d ms\n", result.getMilliseconds());
-        return result.hashCode();
+        return convertSVMToJVM(env, result);
     }
 
+    private static JObject convertSVMToJVM(JNIEnv env, MatrixSearch.Result result) {
+        JNIEnv.JNINativeInterface fn = env.getFunctions();
+        final String resultClassNameJava = MatrixSearch.Result.class.getName().replace('.', '/');
+        try (
+            CTypeConversion.CCharPointerHolder resultClassName = CTypeConversion.toCString(resultClassNameJava);
+            CTypeConversion.CCharPointerHolder name = CTypeConversion.toCString("<init>");
+            CTypeConversion.CCharPointerHolder sig = CTypeConversion.toCString("(JJJJ)V");
+            ) {
+            JClass resultClass = fn.getFindClass().find(env, resultClassName.get());
+            JMethodID constuctor = fn.getGetMethodID().find(env, resultClass, name.get(), sig.get());
+
+
+            JValue args = StackValue.get(4, JValue.class);
+            args.addressOf(0).j(result.getRow());
+            args.addressOf(1).j(result.getColumn());
+            args.addressOf(2).j(result.getSize());
+            args.addressOf(3).j(result.getMilliseconds());
+
+            JObject jvmResult = fn.getNewObjectA().call(env, resultClass, constuctor, args);
+            return jvmResult;
+        }
+    }
 }
