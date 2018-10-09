@@ -12,10 +12,10 @@ write our own computation in **Java** that manipulates the members of a matrix. 
 
 ### Installation
 
-The first step is to install the necessary libraries and their header files. Use:
+The first step is to install the `gsl` library and its necessary header files. Use:
 ```bash
 $ brew install gsl # on Mac
-$ apt install gsl # on Ubuntu
+$ apt install libgsl-dev # on Ubuntu
 ```
 
 ### The Computation
@@ -112,7 +112,7 @@ what we want to do. We have the algorithm in **Java** and we don't want to rewri
 
 [JNA](https://github.com/java-native-access/jna/blob/master/README.md) is the standard solution for accessing `C` data
 structures from **Java** without writing a single line of `C` code. Let's implement the `GreatScientificLibrary` with
-**JNA**. Let's create [JNAScientificLibrary](master/src/main/java/org/apidesign/demo/matrixultimate/jna/JNAScientificLibrary.java).
+**JNA**. Let's create [JNAScientificLibrary](src/main/java/org/apidesign/demo/matrixultimate/jna/JNAScientificLibrary.java).
 
 The created interface looks nice. The library is using `GslMatrix` wrapper around each `matrix` structure and
 just delegates the algebraic type operations to the `native` methods like `gsl_matrix_alloc` that are (thanks to **JNA**)
@@ -124,7 +124,7 @@ or newer and execute:
 ```bash
 MatrixUltimate$ JAVA_HOME=/pathto/graalvm mvn process-classes exec:exec@run-test
 ```
-You'll see the JNA access being the slowest one from all the perfomed ones (that will be described later).
+You'll see the JNA access being the slowest one from all the performed ones (that will be described later).
 
 ## Native Image
 
@@ -246,8 +246,11 @@ raw `Long` value into appropriate `GslMatrix` pointer and delegating to one of t
     }
 }
 ```
-If we want to run the whole computation in native code, we need to instantiate the `RawScientificLibrary`, pass it into
-constructor of `FindBiggestSquare` algorithm and run the whole computation in native code.
+If we want to run the whole computation in native code, we need to obtain instance of the `RawScientificLibrary`,
+create matrix of requested size, fill it with random values and pass it into the
+constructor of `FindBiggestSquare` algorithm. The *whole computation* will run in
+*native mode*. Which is is exactly what the sample class
+[Main](src/main/java/org/apidesign/demo/matrixultimate/Main.java) does.
 
 But what if we cannot convert/compile whole our **Java** application to native?
 
