@@ -69,10 +69,8 @@
                         </goals>
                         <configuration>
                             <executable>${java.home}/bin/java</executable>
-                            <environmentVariables>
-                                <LD_LIBRARY_PATH>${project.build.directory}</LD_LIBRARY_PATH>
-                            </environmentVariables>
                             <arguments>
+                                <argument>-Djava.library.path=${project.build.directory}</argument>
                                 <argument>${debug.run}</argument>
                                 <argument>-cp</argument>
                                 <classpath/>

@@ -10,6 +10,14 @@ There is a GNU Scientific Library and among its various mathematical operations 
 Imagine we want to use this library in our **Java** application to perform non-trivial matrix operations, yet we also want to
 write our own computation in **Java** that manipulates the members of a matrix. How can we do it?
 
+### Installation
+
+The first step is to install the necessary libraries and their header files. Use:
+```bash
+$ brew install gsl # on Mac
+$ apt install gsl # on Ubuntu
+```
+
 ### The Computation
 
 The goal is to write a *single* algorithm in Java and use it in different setups. As such let's encapsulate

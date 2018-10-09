@@ -113,8 +113,23 @@ final class JNIHeaderDirectives implements CContext.Directives {
         final File include = new File(jreHome.getParentFile(), "include");
         final File[] jnis = {
             new File(include, "jni.h"),
-            new File(new File(include, "linux"), "jni_md.h"),
+            null,
         };
+
+        for (File f : include.listFiles()) {
+            if (f.isDirectory()) {
+                File jni_md = new File(f, "jni_md.h");
+                if (jni_md.exists()) {
+                    jnis[1] = jni_md;
+                    break;
+                }
+            }
+        }
+
+        if (jnis[1] == null) {
+            throw new IllegalStateException("Cannot find jni_md.h under " + include);
+        }
+
         return jnis;
     }
 }
