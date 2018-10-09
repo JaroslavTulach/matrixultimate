@@ -103,4 +103,35 @@
         <debug.native>-Dignore</debug.native>
         <debug.run>-Dignore</debug.run>
     </properties>
+    <profiles>
+        <profile>
+            <id>check-graalvm</id>
+            <activation>
+                <file>
+                    <missing>${java.home}/bin/native-image</missing>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apidesign.bck2brwsr</groupId>
+                        <artifactId>bck2brwsr-maven-plugin</artifactId>
+                        <version>0.23</version>
+                        <executions>
+                            <execution>
+                                <id>install-graalvm</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>show</goal>
+                                </goals>
+                                <configuration>
+                                    <startpage>https://github.com/JaroslavTulach/matrixultimate/blob/master/README.md</startpage>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
