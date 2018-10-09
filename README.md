@@ -4,6 +4,8 @@ This is a sample project that demonstrates alternative approaches to access a **
 the help of OracleLabs [GraalVM](http://graalvm.org). The lessons learned in this project are applicable for everyone who
 has a **C** data and needs fast and effective access to them from the **JVM**.
 
+[![Build Status](https://travis-ci.org/JaroslavTulach/matrixultimate.svg?branch=master)](https://travis-ci.org/JaroslavTulach/matrixultimate)
+
 ## The Plot
 
 There is a GNU Scientific Library and among its various mathematical operations it also provides access to matrix computation.
