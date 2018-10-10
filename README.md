@@ -8,7 +8,8 @@ has a **C** data and needs fast and effective access to them from the **JVM**.
 
 ## The Plot
 
-There is a GNU Scientific Library and among its various mathematical operations it also provides access to matrix computation.
+There is a [GNU Scientific Library](https://www.gnu.org/software/gsl/doc/html/)
+and among its various mathematical operations it also provides access to matrix computation.
 Imagine we want to use this library in our **Java** application to perform non-trivial matrix operations, yet we also want to
 write our own computation in **Java** that manipulates the members of a matrix. How can we do it?
 
@@ -20,10 +21,12 @@ $ brew install gsl # on Mac
 $ apt install libgsl-dev # on Ubuntu
 ```
 
+Then we also need **GraalVM** RC6 or newer - download it from http://graalvm.org
+
 ### The Computation
 
-The goal is to write a *single* algorithm in Java and use it in different setups. As such let's encapsulate
-the algorithm into its own class
+The goal of this example is to write a *single* algorithm in Java and use it
+in different setups. As such let's encapsulate the algorithm into its own class
 [FindBiggestSquare](src/main/java/org/apidesign/demo/matrixultimate/FindBiggestSquare.java) and let it accept
 an implementation of [GreatScientificLibrary](src/main/java/org/apidesign/demo/matrixultimate/GreatScientificLibrary.java) 
 as an argument during construction. The `GreatScientificLibrary` interface is an abstraction over the operations 
