@@ -4,10 +4,15 @@ import org.apidesign.demo.matrixultimate.GreatScientificLibrary;
 import static org.apidesign.demo.matrixultimate.svm.SVMIsolate.ID;
 
 public final class SVMScientificLibrary implements GreatScientificLibrary<Long> {
+    /** Calls native image implementation at {@link SVMScientificLibraryJNI#create0}. */
     private static native long create0(long id, long size1, long size2);
+    /** Calls native image implementation at {@link SVMScientificLibraryJNI#free0}. */
     private static native void free0(long id, long ptr);
+    /** Calls native image implementation at {@link SVMScientificLibraryJNI#get0}. */
     private static native double get0(long id, long ptr, long r, long c);
+    /** Calls native image implementation at {@link SVMScientificLibraryJNI#set0}. */
     private static native void set0(long id, long ptr, long r, long c, double v);
+    /** Calls native image implementation at {@link SVMScientificLibraryJNI#size0}. */
     private static native long size0(long id, long ptr, int type);
 
     @Override

@@ -6,5 +6,8 @@ final class SVMIsolate {
         System.loadLibrary("scientificjava");
         ID = svmInit();
     }
+    /** Calls native-image builtin: {@link SVMScientificLibraryJNI#svmInit()}.
+     * @return ID of the native-image VM runtime
+     */
     private static native long svmInit();
 }
