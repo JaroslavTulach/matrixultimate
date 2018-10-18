@@ -64,4 +64,24 @@
                 <jpda.listen>true</jpda.listen>
             </properties>
         </action>
+        <action>
+            <actionName>CUSTOM-Run SVM</actionName>
+            <displayName>Run (1024) Native Lib</displayName>
+            <goals>
+                <goal>compile</goal>
+                <goal>exec:exec@run-svm</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>CUSTOM-Debug SVM</actionName>
+            <displayName>Debug (1024) Native Lib</displayName>
+            <goals>
+                <goal>compile</goal>
+                <goal>exec:exec@run-svm</goal>
+            </goals>
+            <properties>
+                <debug.run>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address}</debug.run>
+                <jpda.listen>true</jpda.listen>
+            </properties>
+        </action>
     </actions>
