@@ -25,17 +25,23 @@
             </properties>
         </action>
         <action>
-            <actionName>profile</actionName>
-            <packagings>
-                <packaging>jar</packaging>
-            </packagings>
+            <actionName>CUSTOM-Run JNA</actionName>
+            <displayName>Run (1024) JNA</displayName>
             <goals>
-                <goal>process-classes</goal>
-                <goal>org.codehaus.mojo:exec-maven-plugin:1.5.0:exec</goal>
+                <goal>compile</goal>
+                <goal>exec:exec@run-jna</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>CUSTOM-Debug JNA</actionName>
+            <displayName>Debug (1024) JNA</displayName>
+            <goals>
+                <goal>compile</goal>
+                <goal>exec:exec@run-jna</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath org.netbeans.html.complex.Main 1</exec.args>
-                <exec.executable>java</exec.executable>
+                <debug.run>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address}</debug.run>
+                <jpda.listen>true</jpda.listen>
             </properties>
         </action>
     </actions>

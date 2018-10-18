@@ -4,13 +4,17 @@ import org.apidesign.demo.matrixultimate.svm.RawScientificLibrary;
 
 final class Main {
     public static void main(String... args) throws Exception {
+        main(RawScientificLibrary.getDefault(), args);
+    }
+
+    static void main(GreatScientificLibrary<?> gsl, String... args) throws Exception {
         int size;
         if (args.length == 1) {
             size = Integer.parseInt(args[0]);
         } else {
             throw new IllegalArgumentException("Usage: matrixultimate <size_of_the_matrix>");
         }
-        runTest(RawScientificLibrary.getDefault(), size);
+        runTest(gsl, size);
     }
 
     private static <Matrix> void runTest(GreatScientificLibrary<Matrix> gsl, int size) {

@@ -84,14 +84,31 @@
                             <goal>exec</goal>
                         </goals>
                         <phase>verify</phase>
+                        <configuration>
+                            <executable>${project.build.directory}/matrixultimate</executable>
+                            <arguments>
+                                <argument>1024</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>run-jna</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>verify</phase>
+                        <configuration>
+                            <executable>${java.home}/bin/java</executable>
+                            <arguments>
+                                <argument>${debug.run}</argument>
+                                <argument>-cp</argument>
+                                <classpath/>
+                                <argument>org.apidesign.demo.matrixultimate.MainJna</argument>
+                                <argument>1024</argument>
+                            </arguments>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <executable>${project.build.directory}/matrixultimate</executable>
-                    <arguments>
-                        <argument>8192</argument>
-                    </arguments>
-                </configuration>
             </plugin>
         </plugins>
     </build>
