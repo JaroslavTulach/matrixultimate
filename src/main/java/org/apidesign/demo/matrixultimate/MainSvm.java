@@ -16,17 +16,12 @@ final class MainSvm {
     }
 
     private static <Matrix> void runTest(GreatScientificLibrary<Matrix> gsl, int size) {
-        Matrix matrix = gsl.create(size, size);
-        FillRandomly<Matrix> fill = new FillRandomly<>(gsl, matrix);
-        fill.run();
+        Matrix matrix = Main.prepareTest(size, gsl);
 
         MatrixSearch.Result res = SVMBiggestSquare.compute(gsl.toRaw(matrix));
 
-        System.out.println("Found square of size " + res.getSize() + " at " + res.getRow() + ":" + res.getColumn());
-        Dump<Matrix> dump = new Dump<>(gsl, matrix, res.getRow(), res.getColumn(), res.getSize());
-        dump.run();
+        Main.printTestResult(res, gsl, matrix);
 
-        System.out.println("Took " + res.getMilliseconds() + " ms");
         gsl.free(matrix);;
     }
 }
