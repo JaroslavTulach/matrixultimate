@@ -108,6 +108,24 @@
                             </arguments>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>run-jni</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>verify</phase>
+                        <configuration>
+                            <executable>${java.home}/bin/java</executable>
+                            <arguments>
+                                <argument>-Djava.library.path=${project.build.directory}</argument>
+                                <argument>${debug.run}</argument>
+                                <argument>-cp</argument>
+                                <classpath/>
+                                <argument>org.apidesign.demo.matrixultimate.MainJni</argument>
+                                <argument>1024</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>

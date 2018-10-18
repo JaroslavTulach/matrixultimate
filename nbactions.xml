@@ -44,4 +44,24 @@
                 <jpda.listen>true</jpda.listen>
             </properties>
         </action>
+        <action>
+            <actionName>CUSTOM-Run JNI</actionName>
+            <displayName>Run (1024) JNI</displayName>
+            <goals>
+                <goal>compile</goal>
+                <goal>exec:exec@run-jni</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>CUSTOM-Debug JNI</actionName>
+            <displayName>Debug (1024) JNI</displayName>
+            <goals>
+                <goal>compile</goal>
+                <goal>exec:exec@run-jni</goal>
+            </goals>
+            <properties>
+                <debug.run>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address}</debug.run>
+                <jpda.listen>true</jpda.listen>
+            </properties>
+        </action>
     </actions>
