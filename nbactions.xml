@@ -84,4 +84,15 @@
                 <jpda.listen>true</jpda.listen>
             </properties>
         </action>
+        <action>
+            <actionName>CUSTOM-Run Native</actionName>
+            <displayName>Run (1024) Native</displayName>
+            <goals>
+                <goal>compile</goal>
+                <goal>exec:exec@run-standalone</goal>
+            </goals>
+            <properties>
+                <exec.args>1024</exec.args>
+            </properties>
+        </action>
     </actions>
