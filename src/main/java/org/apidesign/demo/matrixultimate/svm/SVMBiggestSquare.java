@@ -7,7 +7,9 @@ public final class SVMBiggestSquare {
      * 
      * @see SVMScientificLibraryJNI#directlyComputeViaSvm
      */
-    private static native MatrixSearch.Result directlyComputeViaSvm(long id, long ptrMatrix);
+    private static native MatrixSearch.Result directlyComputeViaSvm(
+        long isolateId, long ptrMatrix
+    );
 
     public static MatrixSearch.Result compute(long ptrMatrix) {
         return directlyComputeViaSvm(SVMIsolate.ID, ptrMatrix);
