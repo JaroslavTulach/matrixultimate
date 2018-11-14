@@ -1,14 +1,18 @@
 package org.apidesign.demo.matrixultimate.svm;
 
+import com.oracle.svm.core.c.function.CEntryPointActions;
+import com.oracle.svm.core.c.function.CEntryPointOptions;
 import org.apidesign.demo.matrixultimate.MatrixSearch;
 import org.apidesign.demo.matrixultimate.svm.JNIEnv.JClass;
 import org.apidesign.demo.matrixultimate.svm.JNIEnv.JMethodID;
 import org.apidesign.demo.matrixultimate.svm.JNIEnv.JObject;
 import org.apidesign.demo.matrixultimate.svm.JNIEnv.JValue;
+import org.graalvm.nativeimage.Isolate;
 import org.graalvm.nativeimage.StackValue;
 import org.graalvm.nativeimage.c.function.CEntryPoint;
 import org.graalvm.nativeimage.c.type.CTypeConversion;
 import org.graalvm.word.Pointer;
+import org.graalvm.word.WordFactory;
 
 /** Native image implementation of JNI entry point methods. All the
  * {@link CEntryPoint} methods are on the "boundary" from the native side.
@@ -71,6 +75,24 @@ final class SVMScientificLibraryJNI {
         return convertSVMToJVM(env, result);
     }
 
+   public static final class AttachThreadPrologue {
+        static void enter(@CEntryPoint.IsolateContext long id) {
+            Isolate isolate = WordFactory.pointer(id);
+            int code = CEntryPointActions.enterAttachThread(isolate);
+            if (code != 0) {
+                CEntryPointActions.bailoutInPrologue();
+            }
+        }
+    }
+
+    @CEntryPointOptions(prologue = AttachThreadPrologue.class)
+    @CEntryPoint(name = "Java_org_apidesign_demo_matrixultimate_svm_SVMScientificLibraryJNI_ownJNIEnv")
+    public static long ownJNIEnvImpl(JNIEnv env, JNIEnv.JClass clazz, @CEntryPoint.IsolateContext long isolateId) {
+        return env.rawValue();
+    }
+
+    private static native long ownJNIEnv(long isolateId);
+
     /** Native image object to HotSpot JVM object conversion.
      * Converts {@link MatrixSearch.Result} object of <b>native-image</b> to
      * {@link MatrixSearch.Result} object of standard JVM using {@link JNIEnv}
@@ -81,6 +103,9 @@ final class SVMScientificLibraryJNI {
      * @return JObject representing the result in the (HotSpot) JVM
      */
     private static JObject convertSVMToJVM(JNIEnv env, MatrixSearch.Result result) {
+        System.err.println("currentEnv: " + env.rawValue());
+        System.loadLibrary("scientificjava");
+        System.err.println("jniOwnEnv: " + ownJNIEnv(SVMIsolate.ID));
         JNIEnv.JNINativeInterface fn = env.getFunctions();
         final String resultClassNameJava = MatrixSearch.Result.class.getName().replace('.', '/');
         try (

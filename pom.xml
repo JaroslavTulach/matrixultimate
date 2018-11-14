@@ -19,6 +19,14 @@
             <scope>provided</scope>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>org.graalvm</groupId>
+            <artifactId>svm</artifactId>
+            <version>1.0.0-rc5</version>
+            <scope>system</scope>
+            <systemPath>${java.home}/lib/svm/builder/svm.jar</systemPath>
+            <type>jar</type>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -39,6 +47,8 @@
                                 <argument>${debug.native}</argument>
                                 <argument>--shared</argument>
                                 <argument>-H:Name=${project.build.directory}/libscientificjava</argument>
+                                <argument>-H:+JNI</argument>
+                                <argument>-H:DelayClassInitialization=org.apidesign.demo.matrixultimate.svm.SVMIsolate</argument>
                                 <argument>-cp</argument>
                                 <classpath/>
                             </arguments>
