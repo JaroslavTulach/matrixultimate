@@ -3,14 +3,9 @@ package org.apidesign.demo.matrixultimate.svm;
 import com.oracle.svm.core.c.function.CEntryPointActions;
 import com.oracle.svm.core.c.function.CEntryPointOptions;
 import org.apidesign.demo.matrixultimate.MatrixSearch;
-import org.apidesign.demo.matrixultimate.svm.JNIEnv.JClass;
-import org.apidesign.demo.matrixultimate.svm.JNIEnv.JMethodID;
 import org.apidesign.demo.matrixultimate.svm.JNIEnv.JObject;
-import org.apidesign.demo.matrixultimate.svm.JNIEnv.JValue;
 import org.graalvm.nativeimage.Isolate;
-import org.graalvm.nativeimage.StackValue;
 import org.graalvm.nativeimage.c.function.CEntryPoint;
-import org.graalvm.nativeimage.c.type.CTypeConversion;
 import org.graalvm.word.Pointer;
 import org.graalvm.word.WordFactory;
 
@@ -87,44 +82,44 @@ final class SVMScientificLibraryJNI {
 
     @CEntryPointOptions(prologue = AttachThreadPrologue.class)
     @CEntryPoint(name = "Java_org_apidesign_demo_matrixultimate_svm_SVMScientificLibraryJNI_ownJNIEnv")
-    public static long ownJNIEnvImpl(JNIEnv env, JNIEnv.JClass clazz, @CEntryPoint.IsolateContext long isolateId) {
+    static long ownJNIEnvImpl(JNIEnv env, JNIEnv.JClass clazz, @CEntryPoint.IsolateContext long isolateId) {
         return env.rawValue();
     }
-
     private static native long ownJNIEnv(long isolateId);
+
+    @CEntryPoint(name = "Java_org_apidesign_demo_matrixultimate_svm_SVMScientificLibraryJNI_objPointer")
+    static long objPointerImpl(JNIEnv env, JNIEnv.JClass clazz, @CEntryPoint.IsolateContext long isolateId, JObject obj, int check) {
+        System.err.println("hr check: " + check);
+        System.err.println("here env: " + env.rawValue());
+        System.err.println("here cls: " + clazz.rawValue());
+        System.err.println("here id : " + isolateId);
+        System.err.println("here obj: " + obj.rawValue());
+        return obj.rawValue();
+    }
+    private static native long objPointer(long isolateId, Object obj, int check);
 
     /** Native image object to HotSpot JVM object conversion.
      * Converts {@link MatrixSearch.Result} object of <b>native-image</b> to
      * {@link MatrixSearch.Result} object of standard JVM using {@link JNIEnv}
      * interface to JVM.
      *
-     * @param env the interface to the (HotSpot) JVM
+     * @param toEnv the interface to the (HotSpot) JVM
      * @param result object to convert
      * @return JObject representing the result in the (HotSpot) JVM
      */
-    private static JObject convertSVMToJVM(JNIEnv env, MatrixSearch.Result result) {
-        System.err.println("currentEnv: " + env.rawValue());
+    private static JObject convertSVMToJVM(JNIEnv toEnv, MatrixSearch.Result result) {
+        System.err.println("currentEnv: " + toEnv.rawValue());
         System.loadLibrary("scientificjava");
-        System.err.println("jniOwnEnv: " + ownJNIEnv(SVMIsolate.ID));
-        JNIEnv.JNINativeInterface fn = env.getFunctions();
+        final long ownJNI = ownJNIEnv(SVMIsolate.ID);
+        System.err.println("jniOwnEnv: " + ownJNI);
+        System.err.println("resultReal: " + result);
+        System.err.println("resultIdnt: " + System.identityHashCode(result));
+        System.err.println("with: " + SVMIsolate.ID);
+        final long resultID = objPointer(SVMIsolate.ID, result, 33);
+        System.err.println("result: " + resultID);
+        JObject fromResult = WordFactory.pointer(resultID);
         final String resultClassNameJava = MatrixSearch.Result.class.getName().replace('.', '/');
-        try (
-            CTypeConversion.CCharPointerHolder resultClassName = CTypeConversion.toCString(resultClassNameJava);
-            CTypeConversion.CCharPointerHolder name = CTypeConversion.toCString("<init>");
-            CTypeConversion.CCharPointerHolder sig = CTypeConversion.toCString("(JJJJ)V");
-            ) {
-            JClass resultClass = fn.getFindClass().find(env, resultClassName.get());
-            JMethodID constuctor = fn.getGetMethodID().find(env, resultClass, name.get(), sig.get());
-
-
-            JValue args = StackValue.get(4, JValue.class);
-            args.addressOf(0).j(result.getRow());
-            args.addressOf(1).j(result.getColumn());
-            args.addressOf(2).j(result.getSize());
-            args.addressOf(3).j(result.getMilliseconds());
-
-            JObject jvmResult = fn.getNewObjectA().call(env, resultClass, constuctor, args);
-            return jvmResult;
-        }
+        final JNIEnv fromEnv = WordFactory.pointer(ownJNI);
+        return Copy.deepCopy(resultClassNameJava, fromResult, fromEnv, toEnv);
     }
 }

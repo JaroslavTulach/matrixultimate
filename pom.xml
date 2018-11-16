@@ -48,6 +48,7 @@
                                 <argument>--shared</argument>
                                 <argument>-H:Name=${project.build.directory}/libscientificjava</argument>
                                 <argument>-H:+JNI</argument>
+                                <argument>-H:JNIConfigurationFiles=jni.json</argument>
                                 <argument>-H:DelayClassInitialization=org.apidesign.demo.matrixultimate.svm.SVMIsolate</argument>
                                 <argument>-cp</argument>
                                 <classpath/>

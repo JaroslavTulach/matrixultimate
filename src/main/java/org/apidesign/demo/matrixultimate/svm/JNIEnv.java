@@ -31,13 +31,28 @@ interface JNIEnv extends PointerBase {
         GetMethodId getGetMethodID();
 
         @CField
+        GetFieldId getGetFieldID();
+
+        @CField
         FindClass getFindClass();
+
+        @CField
+        GetObjectClass getGetObjectClass();
 
         @CField
         CallStaticVoidMethod getCallStaticVoidMethodA();
 
         @CField
         CallStaticObjectMethod getNewObjectA();
+
+        @CField
+        AllocObject getAllocObject();
+
+        @CField
+        GetLongField getGetLongField();
+
+        @CField
+        SetLongField getSetLongField();
     }
 
     interface GetMethodId extends CFunctionPointer {
@@ -45,9 +60,34 @@ interface JNIEnv extends PointerBase {
         JMethodID find(JNIEnv env, JClass clazz, CCharPointer name, CCharPointer sig);
     }
 
+    interface GetFieldId extends CFunctionPointer {
+        @InvokeCFunctionPointer
+        JFieldID find(JNIEnv env, JClass clazz, CCharPointer name, CCharPointer sig);
+    }
+
     interface FindClass extends CFunctionPointer {
         @InvokeCFunctionPointer
         JClass find(JNIEnv env, CCharPointer name);
+    }
+
+    interface GetObjectClass extends CFunctionPointer {
+        @InvokeCFunctionPointer
+        JClass getClass(JNIEnv env, JObject obj);
+    }
+
+    interface AllocObject extends CFunctionPointer {
+        @InvokeCFunctionPointer
+        JObject alloc(JNIEnv env, JClass clazz);
+    }
+
+    interface GetLongField extends CFunctionPointer {
+        @InvokeCFunctionPointer
+        long get(JNIEnv env, JObject obj, JFieldID fieldID);
+    }
+
+    interface SetLongField extends CFunctionPointer {
+        @InvokeCFunctionPointer
+        void set(JNIEnv env, JObject obj, JFieldID fieldID, long value);
     }
 
     interface JObject extends PointerBase {
@@ -67,6 +107,9 @@ interface JNIEnv extends PointerBase {
     }
     interface JMethodID extends PointerBase {
     }
+    interface JFieldID extends PointerBase {
+    }
+
     @CStruct("jvalue")
     interface JValue extends PointerBase {
         @CField boolean z();
