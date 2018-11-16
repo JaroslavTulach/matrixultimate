@@ -61,7 +61,7 @@ final class SVMScientificLibraryJNI {
 
     /**
      * Implementation of JNI native method.
-     * 
+     *
      * @see SVMBiggestSquare#directlyComputeViaSvm
      */
     @CEntryPoint(name = "Java_org_apidesign_demo_matrixultimate_svm_SVMBiggestSquare_directlyComputeViaSvm")
@@ -88,15 +88,18 @@ final class SVMScientificLibraryJNI {
     private static native long ownJNIEnv(long isolateId);
 
     @CEntryPoint(name = "Java_org_apidesign_demo_matrixultimate_svm_SVMScientificLibraryJNI_objPointer")
-    static long objPointerImpl(JNIEnv env, JNIEnv.JClass clazz, @CEntryPoint.IsolateContext long isolateId, JObject obj, int check) {
-        System.err.println("hr check: " + check);
-        System.err.println("here env: " + env.rawValue());
-        System.err.println("here cls: " + clazz.rawValue());
-        System.err.println("here id : " + isolateId);
-        System.err.println("here obj: " + obj.rawValue());
-        return obj.rawValue();
+    static long objPointerImpl(JNIEnv env, JNIEnv.JClass clazz, @CEntryPoint.IsolateContext long isolateId, JObject obj) {
+        JObject global = env.getFunctions().getNewGlobalRef().apply(env, obj);
+        return global.rawValue();
     }
-    private static native long objPointer(long isolateId, Object obj, int check);
+    private static native long objPointer(long isolateId, Object obj);
+
+    @CEntryPoint(name = "Java_org_apidesign_demo_matrixultimate_svm_SVMScientificLibraryJNI_releaseGlobalObj")
+    static void releaseGlobalObjImpl(JNIEnv env, JNIEnv.JClass clazz, @CEntryPoint.IsolateContext long isolateId, long obj) {
+        JObject global = WordFactory.pointer(obj);
+        env.getFunctions().getDeleteGlobalRef().apply(env, global);
+    }
+    private static native void releaseGlobalObj(long isolateId, long objPointer);
 
     /** Native image object to HotSpot JVM object conversion.
      * Converts {@link MatrixSearch.Result} object of <b>native-image</b> to
@@ -108,18 +111,14 @@ final class SVMScientificLibraryJNI {
      * @return JObject representing the result in the (HotSpot) JVM
      */
     private static JObject convertSVMToJVM(JNIEnv toEnv, MatrixSearch.Result result) {
-        System.err.println("currentEnv: " + toEnv.rawValue());
         System.loadLibrary("scientificjava");
         final long ownJNI = ownJNIEnv(SVMIsolate.ID);
-        System.err.println("jniOwnEnv: " + ownJNI);
-        System.err.println("resultReal: " + result);
-        System.err.println("resultIdnt: " + System.identityHashCode(result));
-        System.err.println("with: " + SVMIsolate.ID);
-        final long resultID = objPointer(SVMIsolate.ID, result, 33);
-        System.err.println("result: " + resultID);
+        final long resultID = objPointer(SVMIsolate.ID, result);
         JObject fromResult = WordFactory.pointer(resultID);
         final String resultClassNameJava = MatrixSearch.Result.class.getName().replace('.', '/');
         final JNIEnv fromEnv = WordFactory.pointer(ownJNI);
-        return Copy.deepCopy(resultClassNameJava, fromResult, fromEnv, toEnv);
+        JObject jvmObj = Copy.deepCopy(resultClassNameJava, fromResult, fromEnv, toEnv);
+        releaseGlobalObj(SVMIsolate.ID, resultID);
+        return jvmObj;
     }
 }

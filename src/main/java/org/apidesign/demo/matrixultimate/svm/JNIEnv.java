@@ -53,6 +53,12 @@ interface JNIEnv extends PointerBase {
 
         @CField
         SetLongField getSetLongField();
+
+        @CField
+        GlobalRef getNewGlobalRef();
+
+        @CField
+        GlobalRef getDeleteGlobalRef();
     }
 
     interface GetMethodId extends CFunctionPointer {
@@ -88,6 +94,11 @@ interface JNIEnv extends PointerBase {
     interface SetLongField extends CFunctionPointer {
         @InvokeCFunctionPointer
         void set(JNIEnv env, JObject obj, JFieldID fieldID, long value);
+    }
+
+    interface GlobalRef extends CFunctionPointer {
+        @InvokeCFunctionPointer
+        JObject apply(JNIEnv env, JObject obj);
     }
 
     interface JObject extends PointerBase {
