@@ -69,6 +69,9 @@ public interface MatrixSearch {
             return true;
         }
 
-
+        @Override
+        public String toString() {
+            return "Found " + size + " square at " + row + ":" + column + "in " + time + " ms";
+        }
     }
 }

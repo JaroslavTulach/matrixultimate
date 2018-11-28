@@ -20,8 +20,8 @@ final class FillRandomly<Matrix> implements Runnable {
         for (long i = 0; i < size1; i++) {
             for (long j = 0; j < size2; j++) {
                 double u = r.nextDouble();
-                long zeroToTwo = (long) (u * 2.0);
-                gsl.set(matrix, i, j, zeroToTwo);
+                double zeroOrOne = Math.floor(u * 2.0);
+                gsl.set(matrix, i, j, zeroOrOne);
             }
         }
     }
