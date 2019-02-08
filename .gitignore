@@ -1,2 +1,6 @@
 target
 *.h
+.classpath
+.project
+.settings/
+
