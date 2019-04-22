@@ -4,11 +4,17 @@ addons:
   homebrew:
     packages: gsl
 script:
+  - URL_ROOT=https://github.com/oracle/graal/releases/download/vm-1.0.0-rc15/
   - env
+  - mkdir -p download
+  - cd download
   - if [ "$_system_name" == "OSX" ]; then S=macos; D=/Contents/Home/; else S=linux; D=/; fi
-  - wget https://github.com/oracle/graal/releases/download/vm-1.0.0-rc7/graalvm-ce-1.0.0-rc7-$S-amd64.tar.gz
-  - tar fxz graalvm-ce-1.0.0-rc7-$S-amd64.tar.gz
-  - JAVA_HOME=graalvm-ce-1.0.0-rc7$D mvn clean install
+  - wget $URL_ROOT/graalvm-ce-1.0.0-rc15-$S-amd64.tar.gz
+  - cd ..
+  - tar fxz download/graalvm-ce-*.tar.gz
+  - DIR=`ls -d graalvm-ce-*`
+  - echo $DIR
+  - JAVA_HOME=$DIR$D mvn clean install
 matrix:
     include:
         - os: linux
