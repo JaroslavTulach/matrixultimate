@@ -1,2 +1,4 @@
 target
 *.h
+*.so
+*configuration.xml

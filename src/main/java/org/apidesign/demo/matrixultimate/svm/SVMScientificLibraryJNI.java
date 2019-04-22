@@ -23,7 +23,7 @@ final class SVMScientificLibraryJNI {
      */
     @CEntryPoint(
         name = "Java_org_apidesign_demo_matrixultimate_svm_SVMIsolate_svmInit",
-        builtin = CEntryPoint.Builtin.CreateIsolate
+        builtin = CEntryPoint.Builtin.CREATE_ISOLATE
     )
     public static native long svmInit();
 
@@ -32,7 +32,7 @@ final class SVMScientificLibraryJNI {
         name = "Java_org_apidesign_demo_matrixultimate_svm_SVMScientificLibrary_create0"
     )
     public static RawScientificLibrary.GslMatrix create0(
-        Pointer jniEnv, Pointer clazz, @CEntryPoint.IsolateContext long isolateId,
+        Pointer jniEnv, Pointer clazz, @CEntryPoint.IsolateThreadContext long isolateId,
         long size1, long size2
     ) {
         return RawScientificLibrary.gsl_matrix_alloc(size1, size2);
@@ -43,7 +43,7 @@ final class SVMScientificLibraryJNI {
         name = "Java_org_apidesign_demo_matrixultimate_svm_SVMScientificLibrary_free0"
     )
     public static void free0(
-        Pointer jniEnv, Pointer clazz, @CEntryPoint.IsolateContext long isolateId,
+        Pointer jniEnv, Pointer clazz, @CEntryPoint.IsolateThreadContext long isolateId,
         RawScientificLibrary.GslMatrix ptr
     ) {
         RawScientificLibrary.gsl_matrix_free(ptr);
@@ -54,7 +54,7 @@ final class SVMScientificLibraryJNI {
         name = "Java_org_apidesign_demo_matrixultimate_svm_SVMScientificLibrary_get0"
     )
     public static double get0(
-        Pointer jniEnv, Pointer clazz, @CEntryPoint.IsolateContext long isolateId,
+        Pointer jniEnv, Pointer clazz, @CEntryPoint.IsolateThreadContext long isolateId,
         RawScientificLibrary.GslMatrix ptr, long r, long c
     ) {
         return RawScientificLibrary.gsl_matrix_get(ptr, r, c);
@@ -65,7 +65,7 @@ final class SVMScientificLibraryJNI {
         name = "Java_org_apidesign_demo_matrixultimate_svm_SVMScientificLibrary_set0"
     )
     public static void set0(
-        Pointer jniEnv, Pointer clazz, @CEntryPoint.IsolateContext long isolateId,
+        Pointer jniEnv, Pointer clazz, @CEntryPoint.IsolateThreadContext long isolateId,
         RawScientificLibrary.GslMatrix ptr, long r, long c, double v
     ) {
         RawScientificLibrary.gsl_matrix_set(ptr, r, c, v);
@@ -76,7 +76,7 @@ final class SVMScientificLibraryJNI {
         name = "Java_org_apidesign_demo_matrixultimate_svm_SVMScientificLibrary_size0"
     )
     public static long size0(
-        Pointer jniEnv, Pointer clazz, @CEntryPoint.IsolateContext long isolateId,
+        Pointer jniEnv, Pointer clazz, @CEntryPoint.IsolateThreadContext long isolateId,
         RawScientificLibrary.GslMatrix ptr, int type
     ) {
         switch (type) {
@@ -97,7 +97,7 @@ final class SVMScientificLibraryJNI {
         name = "Java_org_apidesign_demo_matrixultimate_svm_SVMBiggestSquare_directlyComputeViaSvm"
     )
     public static JObject directlyComputeViaSvm(
-        JNIEnv env, JNIEnv.JClass clazz, @CEntryPoint.IsolateContext long isolateId,
+        JNIEnv env, JNIEnv.JClass clazz, @CEntryPoint.IsolateThreadContext long isolateId,
         RawScientificLibrary.GslMatrix ptr
     ) {
         MatrixSearch.Result result = FIND_BIGGEST_SQUARE.search(ptr.rawValue());
