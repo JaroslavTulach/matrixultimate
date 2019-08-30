@@ -31,7 +31,7 @@ final class GslDirect implements GreatScientificLibrary<Long> {
     @CFunction
     private static native void gsl_matrix_set(GslMatrix p, long r, long c, double v);
 
-    @CEntryPoint(name = "Java_org_apidesign_demo_matrixultimate_svm_SVMIsolate_svmInit", builtin = CEntryPoint.Builtin.CreateIsolate)
+    @CEntryPoint(name = "Java_org_apidesign_demo_matrixultimate_svm_SVMIsolate_svmInit", builtin = CEntryPoint.Builtin.CREATE_ISOLATE)
     public static native long svmInit();
 
     @CEntryPoint(name = "Java_org_apidesign_demo_matrixultimate_svm_SVMScientificLibrary_create0")

@@ -13,9 +13,9 @@
             <version>4.5.1</version>
         </dependency>
         <dependency>
-            <groupId>org.graalvm</groupId>
+            <groupId>org.graalvm.sdk</groupId>
             <artifactId>graal-sdk</artifactId>
-            <version>1.0.0-rc5</version>
+            <version>19.2.0</version>
             <scope>provided</scope>
             <type>jar</type>
         </dependency>
@@ -38,6 +38,7 @@
                             <arguments>
                                 <argument>${debug.native}</argument>
                                 <argument>--shared</argument>
+                                <argument>-H:+ReportExceptionStackTraces</argument>
                                 <argument>-H:Name=${project.build.directory}/libscientificjava</argument>
                                 <argument>-cp</argument>
                                 <classpath/>
