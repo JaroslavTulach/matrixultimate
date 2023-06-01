@@ -4,7 +4,7 @@ This is a sample project that demonstrates alternative approaches to access a **
 the help of OracleLabs [GraalVM](http://graalvm.org). The lessons learned in this project are applicable for everyone who
 has a **C** data and needs fast and effective access to them from the **JVM**.
 
-[![Build Status](https://travis-ci.org/JaroslavTulach/matrixultimate.svg?branch=master)](https://travis-ci.org/JaroslavTulach/matrixultimate)
+[![Build Status](https://github.com/JaroslavTulach/matrixultimate/actions/workflows/maven.yml/badge.svg)](https://github.com/JaroslavTulach/matrixultimate/actions/workflows/maven.yml)
 
 ## The Plot
 
@@ -21,7 +21,10 @@ $ brew install gsl # on Mac
 $ apt install libgsl-dev # on Ubuntu
 ```
 
-Then we also need **GraalVM** RC6 or newer - download it from http://graalvm.org
+We also need **GraalVM** - download it from http://graalvm.org - the
+GraalVM version **22.3.1** is known to work - however so did **19.0.x** and all
+the versions in between - it is very likely any version of **GraalVM** is going
+to work.
 
 ### The Computation
 
@@ -124,8 +127,7 @@ just delegates the algebraic type operations to the `native` methods like `gsl_m
 connected to the actual `C` functions.
 
 Nice, but the overhead of *boundary crossing* is huge. It takes more than three seconds to compute the result for 
-matrix 512x512 and that is too slow. In case you are interested, download [GraalVM](http://graalvm.org) version 1.0.0 RC6
-or newer and execute:
+matrix 512x512 and that is too slow. In case you are interested, download [GraalVM](http://graalvm.org) and execute:
 ```bash
 MatrixUltimate$ JAVA_HOME=/pathto/graalvm mvn process-classes exec:exec@run-test
 ```
