@@ -110,7 +110,13 @@ final class JNIHeaderDirectives implements CContext.Directives {
 
     private static File[] findJNIHeaders() throws IllegalStateException {
         final File jreHome = new File(System.getProperty("java.home"));
-        final File include = new File(jreHome.getParentFile(), "include");
+        File include = new File(jreHome.getParentFile(), "include");
+        if (!include.exists()) {
+          include = new File(jreHome, "include");
+        }
+        if (!include.exists()) {
+          throw new IllegalStateException("Cannot find " + include + " directory");
+        }
         final File[] jnis = {
             new File(include, "jni.h"),
             null,
